@@ -23,3 +23,8 @@ variable "bucket_name" {
   description = "The name to use for the S3 bucket"
   type        = string
 }
+
+variable "allowed_account_ids" {
+  description = "The AWS account IDs that are allowed as targets of the module."
+  type        = list(string)
+}

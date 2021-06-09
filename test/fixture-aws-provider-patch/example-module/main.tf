@@ -5,6 +5,11 @@ provider "aws" {
   alias  = "secondary"
 }
 
+variable "primary_aws_region" {
+  description = "The primary AWS region for this module"
+  type        = string
+}
+
 variable "secondary_aws_region" {
   description = "The AWS region to deploy the S3 bucket into"
   type        = string

@@ -1316,7 +1316,7 @@ func TestAwsProviderPatch(t *testing.T) {
 
 	assert.NoError(
 		t,
-		runTerragruntCommand(t, fmt.Sprintf("terragrunt aws-provider-patch --terragrunt-override-attr region=eu-west-1 --terragrunt-working-dir %s --terragrunt-log-level debug", modulePath), os.Stdout, stderr),
+		runTerragruntCommand(t, fmt.Sprintf("terragrunt aws-provider-patch --terragrunt-override-attr primary_aws_region=eu-west-1 --terragrunt-override-attr secondary_aws_region=us-east-1 --terragrunt-override-attr allowed-account-ids=[\"000001234567\"] --terragrunt-override-attr region=eu-west-1 --terragrunt-working-dir %s --terragrunt-log-level debug", modulePath), os.Stdout, stderr),
 	)
 	t.Log(stderr.String())
 
