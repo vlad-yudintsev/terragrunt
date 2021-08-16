@@ -1,17 +1,21 @@
+orbs:
+  # The Windows orb gives us everything we need to start using the Windows executor.
+win: circleci/windows@2.4.0
+
 defaults: &defaults
   docker:
     - image: 087285199408.dkr.ecr.us-east-1.amazonaws.com/circle-ci-test-image-base:go1.16-tf1.0-tg0.30
 
 version: 2
 jobs:
-  testwindows: 
-    executor: 
+  testwindows:
+    executor:
       name: win/default
 
-    steps: 
-      - checkout 
-      - run: 
-          name: Install golang 
+    steps:
+      - checkout
+      - run:
+          name: Install golang
           shell: powershell.exe
           command: |
             # Remove the old go installation 
@@ -27,8 +31,8 @@ jobs:
             Move-Item "C:\Gotmp\go" "C:\Go"
             # Verify installation
             go version
-      - run: 
-          name: Run go tests 
+      - run:
+          name: Run go tests
           shell: powershell.exe
           command: |
             go test -v ./...
