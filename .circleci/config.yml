@@ -52,7 +52,7 @@ jobs:
             Get-ChildItem -Path C:\Terraformtmp
             Move-Item "C:\Terraformtmp\terraform.exe" "C:\Terraform"
             # Verify installation 
-            Terraform version
+            terraform version
       - run:
           name: Run go tests
           shell: powershell.exe
