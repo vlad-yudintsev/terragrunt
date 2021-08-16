@@ -103,6 +103,13 @@ workflows:
   version: 2
   build-and-test:
     jobs:
+      - testwindows:
+          filters:
+            tags:
+              only: /^v.*/
+          context:
+            - Gruntwork Admin
+            - Gruntwork GCP
       - unit_test:
           filters:
             tags:
