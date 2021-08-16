@@ -6,12 +6,11 @@ defaults: &defaults
   docker:
     - image: 087285199408.dkr.ecr.us-east-1.amazonaws.com/circle-ci-test-image-base:go1.16-tf1.0-tg0.30
 
-version: 2
+version: 2.1
 jobs:
   testwindows:
     executor:
       name: win/default
-
     steps:
       - checkout
       - run:
