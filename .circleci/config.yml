@@ -51,6 +51,8 @@ jobs:
             # Debug 
             Get-ChildItem -Path C:\Terraformtmp
             Move-Item "C:\Terraformtmp\terraform.exe" "C:\Terraform.exe"
+            # Debug echo Path 
+            $Env:Path
             # Verify installation 
             terraform version
       - run:
