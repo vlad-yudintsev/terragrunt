@@ -30,6 +30,21 @@ jobs:
             Move-Item "C:\Gotmp\go" "C:\Go"
             # Verify installation
             go version
+      - run: 
+          name: Install Terraform 
+          shell: powershell.exe 
+          command: |
+            # Remove any old terraform installation 
+            Remove-Item "C:\Terraform" -Recurse 
+            # Download terraform, unpack it, and then update the PATH to include it 
+            $terraformURI = "https://releases.hashicorp.com/terraform/1.0.4/terraform_1.0.4_windows_amd64.zip"
+            $output = "terraform.1.0.4.zip"
+            $ProgressPreference = "SilentlyContinue"
+            Invoke-WebRequest -Uri $terraformURI -OutFile $output 
+            Expand-Archive -LiteralPath $output -DestinationPath "C:\Terraformtmp"
+            Move-Item "C:\Terraformtmp\terraform" "C:\Terraform" 
+            # Verify installation 
+            terraform version
       - run:
           name: Run go tests
           shell: powershell.exe
