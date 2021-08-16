@@ -45,11 +45,8 @@ jobs:
             $output = "terraform.1.0.4.zip"
             $ProgressPreference = "SilentlyContinue"
             Invoke-WebRequest -Uri $terraformURI -OutFile $output 
-            # Make Terraform temp directory 
-            New-Item -ItemType directory -Path C:\Terraformtmp
             # Unpack Terraform to temp directory
-            Expand-Archive -LiteralPath $output -DestinationPath "C:\Terraformtmp"
-            Move-Item "C:\Terraformtmp\terraform" "C:\Terraform" 
+            Expand-Archive -LiteralPath $output -DestinationPath "C:\Terraform" -Force
             # Verify installation 
             terraform version
       - run:
