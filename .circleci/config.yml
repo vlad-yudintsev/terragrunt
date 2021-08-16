@@ -1,6 +1,6 @@
 orbs:
   # The Windows orb gives us everything we need to start using the Windows executor.
-win: circleci/windows@2.4.0
+  win: circleci/windows@2.4.0
 
 defaults: &defaults
   docker:
