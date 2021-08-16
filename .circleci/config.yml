@@ -17,7 +17,7 @@ jobs:
           name: Install golang
           shell: powershell.exe
           command: |
-            # Remove the old go installation 
+            # Remove the old go installation
             Remove-Item "C:\Go" -Recurse
             # Download golang, unpack it, and then update the PATH to include gobin
             $golangURI = "https://golang.org/dl/go1.14.7.windows-amd64.zip"
@@ -40,20 +40,24 @@ jobs:
             {
               Remove-Item $FileName
             }
-            # Download terraform, unpack it, and then update the PATH to include it 
+            # Download terraform, unpack it, and then update the PATH to include it
             $terraformURI = "https://releases.hashicorp.com/terraform/1.0.4/terraform_1.0.4_windows_amd64.zip"
             $output = "terraform.1.0.4.zip"
             $ProgressPreference = "SilentlyContinue"
-            Invoke-WebRequest -Uri $terraformURI -OutFile $output 
+            Invoke-WebRequest -Uri $terraformURI -OutFile $output
             New-Item -ItemType "directory" -Path "C:\Terraformtmp"
             # Unpack Terraform to temp directory
             Expand-Archive -LiteralPath $output -DestinationPath "C:\Terraformtmp" -Force
-            # Debug 
+            # Debug
             Get-ChildItem -Path C:\Terraformtmp
-            Move-Item "C:\Terraformtmp\terraform.exe" "C:\Terraform.exe"
-            # Debug echo Path 
+            Move-Item "C:\Terraformtmp\terraform.exe" "C:\Terraform"
+            # Debug echo Path
             $Env:Path
-            # Verify installation 
+            # Modify Path
+            $env:Path += ";C:\Terraform"
+            # Debug path post-modification
+            $Env:Path
+            # Verify installation
             terraform version
       - run:
           name: Run go tests
@@ -77,7 +81,7 @@ jobs:
             # with any python < 3.6.
             pip3 install pre-commit==1.21.0 cfgv==2.0.1 zipp==1.1.0
             go get golang.org/x/tools/cmd/goimports
-            export GOPATH=~/go/bin && export PATH=$PATH:$GOPATH 
+            export GOPATH=~/go/bin && export PATH=$PATH:$GOPATH
             pre-commit install
             pre-commit run --all-files
       - run:
