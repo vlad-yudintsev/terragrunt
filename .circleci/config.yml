@@ -48,7 +48,7 @@ jobs:
             # Unpack Terraform to temp directory
             Expand-Archive -LiteralPath $output -DestinationPath "C:\Terraform" -Force
             # Verify installation 
-            terraform version
+            Terraform version
       - run:
           name: Run go tests
           shell: powershell.exe
