@@ -50,13 +50,7 @@ jobs:
             Expand-Archive -LiteralPath $output -DestinationPath "C:\Terraformtmp" -Force
             # Debug
             Get-ChildItem -Path C:\Terraformtmp
-            Move-Item "C:\Terraformtmp\terraform.exe" "C:\Terraform"
-            # Debug echo Path
-            $Env:Path
-            # Modify Path
-            $env:Path += ";C:\Terraform"
-            # Debug path post-modification
-            $Env:Path
+            Move-Item "C:\Terraformtmp\terraform.exe" "C:\Windows\system32"
             # Verify installation
             terraform version
       - run:
