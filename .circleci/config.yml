@@ -35,12 +35,12 @@ jobs:
           shell: powershell.exe
           command: |
             # Remove any old terraform installation, if present
-            $FileName = "C:\Terraform"
+            $FileName = "C:\Windows\system32\terraform.exe"
             if (Test-Path $FileName)
             {
-              Remove-Item $FileName
+              Remove-Item $FileName -Recurse
             }
-            # Download terraform, unpack it, and then update the PATH to include it
+            # Download terraform and unpack it
             $terraformURI = "https://releases.hashicorp.com/terraform/1.0.4/terraform_1.0.4_windows_amd64.zip"
             $output = "terraform.1.0.4.zip"
             $ProgressPreference = "SilentlyContinue"
@@ -48,8 +48,7 @@ jobs:
             New-Item -ItemType "directory" -Path "C:\Terraformtmp"
             # Unpack Terraform to temp directory
             Expand-Archive -LiteralPath $output -DestinationPath "C:\Terraformtmp" -Force
-            # Debug
-            Get-ChildItem -Path C:\Terraformtmp
+            # Move terraform binary within Windows %PATH%
             Move-Item "C:\Terraformtmp\terraform.exe" "C:\Windows\system32"
             # Verify installation
             terraform version
@@ -57,7 +56,7 @@ jobs:
           name: Run go tests
           shell: powershell.exe
           command: |
-            go test -v ./...
+            go test -v ./... -timeout 45m
   # We're running unit tests separately from integration tests - with no parallelization.
   # With heavy parallelization coupled with re-use of test fixtures we've witnessed slight
   # instability with the tests. The unit tests are fast to execute, so there is negligible
