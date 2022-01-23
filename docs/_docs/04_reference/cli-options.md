@@ -458,6 +458,7 @@ prefix `--terragrunt-` (e.g., `--terragrunt-config`). The currently available op
 - [terragrunt-override-attr](#terragrunt-override-attr)
 - [terragrunt-json-out](#terragrunt-json-out)
 - [terragrunt-modules-that-include](#terragrunt-modules-that-include)
+- [terragrunt-substitute-macros](#terragrunt-substitute-macros)
 
 
 ### terragrunt-config
@@ -838,3 +839,24 @@ passed in, the set will be the union of modules that includes at least one of th
 
 NOTE: When using relative paths, the paths are relative to the working directory. This is either the current working
 directory, or any path passed in to [terragrunt-working-dir](#terragrunt-working-dir).
+
+### terragrunt-substitute-macros
+
+**CLI Arg**: `terragrunt-substitute-macros`
+**Environment Variable**: `TERRAGRUNT_SUBSTITUTE_MACROS`
+
+When passed in, Terragrunt will replace particular macro placeholders in the Terraform command line
+with a value specific to that instantiation of Terraform.
+
+The following placeholders are currently recognized:
+
+* `::TERRAGRUNT_DIR::`: the directory in which the Terragrunt file resides
+
+The substitution operates with `run-all` as expected. If you run the command
+
+```
+terragrunt run-all --terragrunt-substitute-macros plan -out=::TERRAGRUNT_DIR::/plan.cache
+```
+
+in a directory which contains multiple subdirectories with `terragrunt.hcl` files, Terraform would write
+each `plan.cache` to the same directory as the associated `terragrunt.hcl` file.

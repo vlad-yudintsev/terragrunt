@@ -186,6 +186,9 @@ type TerragruntOptions struct {
 
 	// True if is required to show dependent modules and confirm action
 	CheckDependentModules bool
+
+	// True if Terragrunt should replace all instances of macro placeholders
+	SubstituteMacros bool
 }
 
 // IAMOptions represents options that are used by Terragrunt to assume an IAM role.
@@ -352,6 +355,7 @@ func (terragruntOptions *TerragruntOptions) Clone(terragruntConfigPath string) *
 		AwsProviderPatchOverrides:    terragruntOptions.AwsProviderPatchOverrides,
 		HclFile:                      terragruntOptions.HclFile,
 		JSONOut:                      terragruntOptions.JSONOut,
+		SubstituteMacros:             terragruntOptions.SubstituteMacros,
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -56,6 +57,7 @@ const (
 	optTerragruntStrictValidate              = "terragrunt-strict-validate"
 	optTerragruntJSONOut                     = "terragrunt-json-out"
 	optTerragruntModulesThatInclude          = "terragrunt-modules-that-include"
+	optTerragruntSubstituteMacros            = "terragrunt-substitute-macros"
 )
 
 var allTerragruntBooleanOpts = []string{
@@ -70,6 +72,7 @@ var allTerragruntBooleanOpts = []string{
 	optTerragruntCheck,
 	optTerragruntStrictInclude,
 	optTerragruntDebug,
+	optTerragruntSubstituteMacros,
 }
 var allTerragruntStringOpts = []string{
 	optTerragruntConfig,
@@ -251,6 +254,7 @@ GLOBAL OPTIONS:
    terragrunt-log-level                         Sets the logging level for Terragrunt. Supported levels: panic, fatal, error, warn (default), info, debug, trace.
    terragrunt-strict-validate                   Sets strict mode for the validate-inputs command. By default, strict mode is off. When this flag is passed, strict mode is turned on. When strict mode is turned off, the validate-inputs command will only return an error if required inputs are missing from all input sources (env vars, var files, etc). When strict mode is turned on, an error will be returned if required inputs are missing OR if unused variables are passed to Terragrunt.
    terragrunt-json-out                          The file path that terragrunt should use when rendering the terragrunt.hcl config as json. Only used in the render-json command. Defaults to terragrunt_rendered.json.
+   terragrunt-substitute-macros                 Substitutes macros given as part of the command line with their replacements. Currently supported macros: ::TERRAGRUNT_DIR::
 
 VERSION:
    {{.Version}}{{if len .Authors}}
@@ -276,6 +280,34 @@ var TERRAFORM_HELP_FLAGS = []string{
 	"--help",
 	"-help",
 	"-h",
+}
+
+// Returns a map of macro placeholders to a function that returns what the placeholder should be replaced with
+func getMacroReplacements(terragruntOptions *options.TerragruntOptions) map[string]func() string {
+	return map[string]func() string{
+		"::TERRAGRUNT_DIR::": func() string { return filepath.Dir(terragruntOptions.TerragruntConfigPath) },
+	}
+}
+
+// Takes terragruntOptions and mutates the args list such that all macros are replaced with their substitutions,
+// if SubstituteMacros is true.
+func performMacroSubstitutions(terragruntOptions *options.TerragruntOptions) error {
+	if terragruntOptions.SubstituteMacros {
+		newTerraformCliArgs := []string{}
+		for _, arg := range terragruntOptions.TerraformCliArgs {
+			newArg := arg
+			for macro, replacementFunc := range getMacroReplacements(terragruntOptions) {
+				if strings.Contains(arg, macro) {
+					newArg = strings.ReplaceAll(arg, macro, replacementFunc())
+				}
+				newTerraformCliArgs = append(newTerraformCliArgs, newArg)
+			}
+		}
+		terragruntOptions.TerraformCliArgs = newTerraformCliArgs
+	}
+
+	// this doesn't currently do anything that could return an error, but maybe in the future it might
+	return nil
 }
 
 // Create the Terragrunt CLI App
@@ -416,6 +448,11 @@ func RunTerragrunt(terragruntOptions *options.TerragruntOptions) error {
 	// then use it
 	if terragruntOptions.DownloadDir == defaultDownloadDir && terragruntConfig.DownloadDir != "" {
 		terragruntOptions.DownloadDir = terragruntConfig.DownloadDir
+	}
+
+	err = performMacroSubstitutions(terragruntOptions)
+	if err != nil {
+		return err
 	}
 
 	// Override the default value of retryable errors using the value set in the config file

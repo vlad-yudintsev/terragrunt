@@ -167,6 +167,10 @@ func parseTerragruntOptionsFromArgs(terragruntVersion string, args []string, wri
 	if err != nil {
 		return nil, err
 	}
+
+	terragruntSubstituteMacrosEnvvar := "TERRAGRUNT_SUBSTITUTE_MACROS"
+	substituteMacros := parseBooleanArg(args, optTerragruntSubstituteMacros, os.Getenv(terragruntSubstituteMacrosEnvvar) == "true" || os.Getenv(terragruntSubstituteMacrosEnvvar) == "1")
+
 	// We don't need to check for nil, because parseIAMRoleOptions always returns a valid pointer when no error is
 	// returned.
 	opts.OriginalIAMRoleOptions = *iamRoleOpts
@@ -213,6 +217,7 @@ func parseTerragruntOptionsFromArgs(terragruntVersion string, args []string, wri
 	opts.HclFile = filepath.ToSlash(terragruntHclFilePath)
 	opts.AwsProviderPatchOverrides = awsProviderPatchOverrides
 	opts.JSONOut, err = parseStringArg(args, optTerragruntJSONOut, "terragrunt_rendered.json")
+	opts.SubstituteMacros = substituteMacros
 	if err != nil {
 		return nil, err
 	}
